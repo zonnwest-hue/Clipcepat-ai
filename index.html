@@ -1,71 +1,70 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1020"><meta name="description" content="ClipCepat AI — bantu rencanakan klip video pendek dengan AI.">
-<title>ClipCepat AI — Video Clipper</title><link rel="stylesheet" href="/styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <title>ClipCepat AI — Studio Klip</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 </head>
 <body>
-<div class="app-shell">
-  <aside class="sidebar">
-    <a class="brand" href="#"><span class="brand-mark">CC</span><span><b>ClipCepat AI</b><small>AI VIDEO STUDIO</small></span></a>
-    <nav>
-      <button class="nav-item active" data-view="home">⌂ <span>Beranda</span></button>
-      <button class="nav-item" data-view="create">✂ <span>Buat Klip AI</span></button>
-      <button class="nav-item" data-view="analysis">◉ <span>Analisis Potensi FYP</span></button>
-      <button class="nav-item" data-view="captions">▤ <span>Subtitle & Judul</span></button>
-      <button class="nav-item" data-view="history">◷ <span>Riwayat</span></button>
-      <button class="nav-item" data-view="support">✉ <span>Tanya ClipCepat AI</span></button>
-    </nav>
-    <div class="sidebar-bottom"><div class="plan"><span class="dot"></span><div><b>Mode awal</b><small>Frontend demo · belum terhubung API</small></div></div><small class="muted">Dibuat untuk Cloudflare Pages</small></div>
-  </aside>
-  <main class="main">
-    <header class="topbar"><button id="menuToggle" class="mobile-menu" aria-label="Buka menu">☰</button><div><span class="eyebrow">AI VIDEO WORKSPACE</span><h1 id="pageTitle">Beranda</h1></div><div class="top-actions"><span class="pill"><span class="dot"></span> Gratis untuk dicoba</span><div class="avatar">CC</div></div></header>
-    <section id="view-home" class="view">
-      <div class="hero">
-        <div class="hero-copy"><span class="eyebrow light">POTONG LEBIH CERDAS</span><h2>Video panjang.<br><em>Cerita pendek.</em></h2><p>Rencanakan klip yang menarik, siapkan subtitle, dan temukan ide konten dalam satu ruang kerja.</p><button class="primary" data-go="create">Mulai buat klip <span>→</span></button><small class="hero-note">Analisis AI tidak menjamin video FYP atau viral.</small></div>
-        <div class="hero-art"><div class="orb orb1"></div><div class="orb orb2"></div><div class="play-card"><div class="play-icon">▶</div><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="video-lines"><span></span><span></span><span></span></div><div class="clip-tag">AI CLIP CONCEPT</div></div></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="ClipCepat beranda"><span class="brand-mark">CC</span><span>ClipCepat <small>STUDIO</small></span></a>
+    <span class="status"><i></i> Pemrosesan di perangkat</span>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">VIDEO WORKSPACE · BETA</div>
+      <h1>Ubah video jadi <span>klip siap edit.</span></h1>
+      <p>Potong video langsung di browser HP. File tetap diproses di perangkat Anda; hasil bergantung pada kemampuan browser dan perangkat.</p>
+      <div class="chips"><span>● Tanpa akun</span><span>● Tidak perlu API key</span><span>● Ekspor MP4</span></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head"><div><span class="step">01</span><h2>Pilih sumber video</h2></div><span class="muted">Maksimal sesuai memori perangkat</span></div>
+      <div class="source-grid">
+        <label class="source-card selected" for="videoFile">
+          <span class="source-icon">↑</span><strong>Upload video</strong>
+          <small>Pilih video milik Anda atau yang boleh Anda edit.</small>
+          <input id="videoFile" type="file" accept="video/*">
+          <span class="file-button">Pilih file dari HP</span>
+        </label>
+        <div class="source-card">
+          <span class="source-icon">↗</span><strong>Opsi tautan YouTube</strong>
+          <small>Tautan dapat disimpan sebagai referensi, tetapi tidak diunduh otomatis.</small>
+          <input id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=...">
+          <button id="checkUrl" class="button secondary" type="button">Periksa tautan</button>
+          <p id="urlMessage" class="hint" role="status">Untuk memproses, unggah file yang Anda miliki atau unduh melalui fitur resmi yang Anda berhak gunakan.</p>
+        </div>
       </div>
-      <div class="section-heading"><div><span class="eyebrow">WORKSPACE</span><h2>Semua yang kamu perlukan</h2></div><span class="muted">Mulai dari satu tautan</span></div>
-      <div class="feature-grid">
-        <button class="feature-card" data-go="create"><span class="feature-icon blue">✂</span><b>Buat Klip AI</b><p>Masukkan tautan YouTube untuk memulai alur pembuatan klip.</p><span class="card-link">Buka fitur →</span></button>
-        <button class="feature-card" data-go="analysis"><span class="feature-icon violet">◉</span><b>Analisis Potensi FYP</b><p>Periksa hook, struktur, topik, dan ide untuk meningkatkan daya tarik.</p><span class="card-link">Lihat analisis →</span></button>
-        <button class="feature-card" data-go="captions"><span class="feature-icon green">▤</span><b>Judul & Subtitle</b><p>Siapkan draf judul, caption, dan hashtag untuk kontenmu.</p><span class="card-link">Buat teks →</span></button>
-        <button class="feature-card" data-go="support"><span class="feature-icon orange">✉</span><b>Customer Service</b><p>Pusat bantuan khusus pertanyaan penggunaan ClipCepat.</p><span class="card-link">Tanya bantuan →</span></button>
+      <div id="fileInfo" class="file-info hidden"></div>
+      <video id="preview" controls playsinline class="preview hidden"></video>
+    </section>
+
+    <section class="panel">
+      <div class="section-head"><div><span class="step">02</span><h2>Atur potongan</h2></div><span class="muted">Pemilihan momen AI belum aktif</span></div>
+      <div class="time-grid">
+        <label>Mulai (detik)<input id="startTime" type="number" min="0" step="0.1" value="0"></label>
+        <label>Akhir (detik)<input id="endTime" type="number" min="0" step="0.1" value="15"></label>
       </div>
-      <div class="notice"><span class="notice-icon">ⓘ</span><div><b>Transparan tentang fitur</b><p>Ini adalah paket website awal. Pemrosesan video asli dari URL YouTube dan jawaban AI memerlukan backend/API yang belum dikonfigurasi.</p></div></div>
+      <label class="field-label">Judul klip (opsional)<input id="clipTitle" type="text" maxlength="100" placeholder="Contoh: Momen paling menarik"></label>
+      <label class="field-label">Teks subtitle (opsional)<textarea id="subtitleText" rows="3" placeholder="Tulis subtitle singkat di sini. Untuk saat ini, teks akan diekspor sebagai file SRT terpisah."></textarea></label>
+      <p class="hint">Subtitle otomatis dari suara, pemilihan momen otomatis, dan prediksi FYP belum terintegrasi. Subtitle yang ditulis di atas diekspor sebagai .SRT sederhana, bukan dibakar ke dalam video.</p>
+      <button id="exportBtn" class="button primary" type="button" disabled>Potong & ekspor MP4</button>
+      <div id="progressArea" class="progress-area hidden"><div class="progress-track"><div id="progressBar"></div></div><p id="progressText">Menyiapkan mesin video…</p></div>
+      <p id="errorMessage" class="error" role="alert"></p>
     </section>
-    <section id="view-create" class="view hidden">
-      <div class="page-intro"><span class="eyebrow">VIDEO CLIPPER</span><h2>Ubah tautan jadi rencana klip</h2><p>Masukkan video yang kamu miliki atau punya izin untuk gunakan. Pemrosesan otomatis baru aktif setelah backend terhubung.</p></div>
-      <div class="panel">
-        <label for="youtubeUrl">Tautan video YouTube</label><div class="url-input"><span>▶</span><input id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="url"><button id="pasteBtn" class="secondary">Tempel</button></div>
-        <div class="form-grid"><div><label for="duration">Durasi klip</label><select id="duration"><option>15 detik</option><option selected>30 detik</option><option>60 detik</option><option>90 detik</option></select></div><div><label for="format">Format video</label><select id="format"><option selected>Vertikal 9:16 (Shorts/Reels)</option><option>Persegi 1:1</option><option>Horizontal 16:9</option></select></div><div><label for="quality">Target kualitas</label><select id="quality"><option>720p HD</option><option selected>1080p Full HD</option><option>2K (jika didukung)</option></select></div></div>
-        <label for="goal">Fokus klip</label><select id="goal"><option>Bagian paling menarik</option><option>Hook yang kuat</option><option>Momen lucu</option><option>Informasi penting</option><option>Alur cerita</option></select>
-        <button id="createBtn" class="primary wide">✦ Buat klip sekarang</button>
-        <p class="fine-print">Demo antarmuka: tombol akan memvalidasi tautan dan menjelaskan langkah integrasi, bukan mengunduh atau memotong video.</p>
-      </div>
-      <div id="createResult" class="result-box hidden" aria-live="polite"></div>
-      <div class="notice"><span class="notice-icon">ⓘ</span><div><b>Hak cipta & akses video</b><p>URL YouTube tidak otomatis memberikan izin mengunduh. Gunakan video sendiri atau yang izinnya jelas. Backend harus memakai sumber video yang sah dan mematuhi ketentuan platform.</p></div></div>
+
+    <section class="panel">
+      <div class="section-head"><div><span class="step">03</span><h2>Hasil & privasi</h2></div></div>
+      <p class="muted">Pemotongan berjalan di browser menggunakan FFmpeg.wasm yang dimuat dari CDN. Pertama kali dapat membutuhkan internet. Video besar/4K atau HP dengan RAM rendah mungkin gagal atau membuat tab tertutup.</p>
+      <div class="privacy"><span>🔒</span><div><strong>Jangan masukkan rahasia</strong><p>Versi ini tidak membutuhkan API key, password, atau token. Jangan menaruh kunci rahasia di HTML/JavaScript yang dipublikasikan.</p></div></div>
+      <p class="hint">Gunakan hanya video milik Anda atau video yang Anda punya izin untuk mengunduh, memotong, dan menerbitkannya. Jangan gunakan untuk melewati pembatasan YouTube atau hak cipta.</p>
     </section>
-    <section id="view-analysis" class="view hidden">
-      <div class="page-intro"><span class="eyebrow">AI INSIGHTS</span><h2>Analisis potensi performa</h2><p>Analisis sebenarnya membutuhkan transkrip, metadata, atau konten video yang dapat diakses secara sah.</p></div>
-      <div class="panel"><label for="analysisTopic">Topik atau ringkasan video</label><textarea id="analysisTopic" rows="4" placeholder="Contoh: cerita sejarah Jakarta dengan pembuka yang mengejutkan..."></textarea><button id="analyzeBtn" class="primary wide">Analisis ide (demo)</button><div id="analysisResult" class="hidden"></div></div>
-      <div class="score-grid"><div class="score-card"><span>Hook pembuka</span><b>—</b><small>Menunggu analisis</small></div><div class="score-card"><span>Alur cerita</span><b>—</b><small>Menunggu analisis</small></div><div class="score-card"><span>Subtitle</span><b>—</b><small>Menunggu analisis</small></div></div>
-      <p class="fine-print">Skor dan rekomendasi hanyalah perkiraan. Tidak ada AI yang bisa menjamin FYP, viral, atau jumlah tayangan.</p>
-    </section>
-    <section id="view-captions" class="view hidden">
-      <div class="page-intro"><span class="eyebrow">PUBLISHING KIT</span><h2>Judul, caption & hashtag</h2><p>Buat draf teks untuk konten pendek. Hubungkan API AI untuk hasil yang dibuat secara dinamis.</p></div>
-      <div class="panel"><label for="captionTopic">Topik video</label><input id="captionTopic" placeholder="Masukkan topik video"><label for="platform">Platform</label><select id="platform"><option>YouTube Shorts</option><option>TikTok</option><option>Instagram Reels</option></select><button id="captionBtn" class="primary wide">Buat draf teks</button><div id="captionResult" class="hidden"></div></div>
-    </section>
-    <section id="view-history" class="view hidden">
-      <div class="page-intro"><span class="eyebrow">LIBRARY</span><h2>Riwayat klip</h2><p>Riwayat demo tersimpan di browser ini saja. Ini bukan database akun.</p></div><div id="historyList" class="panel empty-state"><span class="empty-icon">◷</span><b>Belum ada klip</b><p>Setelah backend terhubung, riwayat bisa menyimpan status dan tautan hasil klip.</p></div>
-    </section>
-    <section id="view-support" class="view hidden">
-      <div class="page-intro"><span class="eyebrow">PUSAT BANTUAN</span><h2>Tanya ClipCepat AI</h2><p>Asisten demo ini hanya menjawab pertanyaan seputar penggunaan dan fitur ClipCepat.</p></div>
-      <div class="chat-panel"><div class="chat-head"><div class="bot-avatar">✦</div><div><b>ClipCepat Support</b><small><span class="dot"></span> FAQ demo · AI API belum terhubung</small></div></div><div id="chatMessages" class="chat-messages"><div class="message bot">Halo! Saya bisa membantu soal cara menggunakan ClipCepat, kualitas video, subtitle, analisis, dan kendala website. Ada yang ingin kamu tanyakan?</div></div><div class="suggestions"><button class="suggestion">Bagaimana cara membuat klip?</button><button class="suggestion">Apakah 2K tersedia?</button><button class="suggestion">Kenapa klip belum bisa diunduh?</button></div><form id="chatForm" class="chat-form"><input id="chatInput" placeholder="Tulis pertanyaan tentang ClipCepat..." autocomplete="off" required><button class="primary" aria-label="Kirim pertanyaan">➤</button></form><p class="fine-print">Untuk jawaban generatif, sambungkan Worker backend dan API AI. Jangan simpan API key di frontend.</p></div>
-    </section>
-    <footer><span>© 2026 ClipCepat AI</span><span>Gunakan konten yang kamu punya hak untuk olah.</span></footer>
+    <footer>ClipCepat Studio · Prototipe browser · AI otomatis belum aktif</footer>
   </main>
-</div>
-<div id="toast" class="toast" role="status"></div><script src="/app.js"></script>
-</body></html>
+  <script src="app.js"></script>
+</body>
+</html>

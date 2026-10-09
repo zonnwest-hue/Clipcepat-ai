@@ -1,34 +1,48 @@
-# ClipCepat AI — starter website
+# ClipCepat AI — paket awal untuk HP + Cloudflare Pages
 
-Website statis berbahasa Indonesia, siap diunggah sebagai aset frontend ke Cloudflare Pages.
+## Yang benar-benar tersedia di paket ini
+- Antarmuka responsif untuk HP.
+- Upload video lokal.
+- Pratinjau video dan pengaturan waktu mulai/akhir.
+- Pemotongan/ekspor MP4 di browser menggunakan FFmpeg.wasm.
+- Kolom subtitle manual; bila diisi, diunduh sebagai file SRT terpisah.
+- Kolom tautan YouTube hanya memeriksa bentuk domain dan memberi instruksi aman. **Tidak mengunduh atau memproses video YouTube langsung.**
 
-## Fitur yang sudah berjalan
-- Desain responsif untuk HP dan desktop.
-- Navigasi Beranda, Buat Klip, Analisis Potensi FYP, Subtitle & Judul, Riwayat, dan Customer Service.
-- Validasi format URL YouTube (bukan pengunduhan).
-- Form pilihan durasi, format, kualitas target, dan fokus klip.
-- Template saran konten dan FAQ customer service terbatas pada ClipCepat.
-- Tidak membutuhkan build command.
+## Yang BELUM aktif
+- AI otomatis memilih momen menarik.
+- Transkripsi suara/subtitle otomatis.
+- Subtitle yang tertanam langsung ke video.
+- Pemrosesan URL YouTube.
+- Klaim viral/FYP.
+Fitur-fitur itu memerlukan integrasi model/layanan tambahan dan pengujian nyata. Jangan mempromosikannya sebagai aktif sebelum benar-benar terhubung dan diuji.
 
-## Yang belum aktif (memerlukan backend/API)
-1. **Membuat klip sungguhan dari URL YouTube.** Frontend tidak mengambil atau mengunduh video. Perlu sumber video yang sah, backend pemrosesan (misalnya FFmpeg pada layanan yang sesuai), antrean pekerjaan, penyimpanan sementara/hasil, dan endpoint unduhan. Memproses video berat di Cloudflare Pages saja bukan rancangan yang cukup.
-2. **AI customer service generatif.** Saat ini jawabannya adalah FAQ berbasis aturan. Untuk AI generatif, buat Cloudflare Worker/server backend yang memanggil API model AI. Simpan kunci API sebagai secret server-side, jangan di `app.js`.
-3. **Analisis video sesungguhnya.** Perlu transkrip/metadata/konten yang dapat diakses secara sah, lalu dikirim ke model AI.
-4. **Subtitle otomatis.** Perlu speech-to-text, penyelarasan waktu, dan pembakaran/penyematan subtitle saat ekspor.
-5. **Riwayat lintas perangkat, akun, dan file permanen.** Perlu database dan object storage.
-6. **1080p/2K.** Pilihan di UI hanya target. Hasil nyata bergantung pada resolusi sumber, kemampuan pemroses, codec, dan batas layanan.
+## Cara pasang dari HP Android
+1. Unduh ZIP paket ini dan ekstrak menggunakan aplikasi pengelola file.
+2. Buka GitHub di browser, masuk ke repositori Anda.
+3. Masuk ke folder repositori. Pilih **Add file → Upload files** (atau unggah file satu per satu jika tampilan HP berbeda).
+4. Unggah `index.html`, `styles.css`, `app.js`, `_headers`, dan `README.md` ke **root** repositori (jangan sampai tersimpan di dalam folder tambahan).
+5. Tekan **Commit changes**.
+6. Buka Cloudflare Dashboard → **Workers & Pages** → proyek Pages Anda.
+7. Jika proyek terhubung ke GitHub, tunggu deployment otomatis. Jika tidak, buat deployment Direct Upload dari folder yang berisi file-file tersebut.
+8. Buka URL `*.pages.dev` milik proyek. Tes upload video pendek MP4 terlebih dahulu.
 
-## Deploy ke Cloudflare Pages
-1. Ekstrak ZIP ini.
-2. Buat repository GitHub baru dan unggah `index.html`, `styles.css`, `app.js`, `_headers`, dan `README.md` ke root repository.
-3. Di Cloudflare Dashboard, buka **Workers & Pages → Create → Pages → Connect to Git**.
-4. Pilih repository. Untuk situs statis ini, gunakan build command kosong dan build output directory `/` (root repository). Jika dashboard tidak menerima `/`, gunakan konfigurasi direktori sesuai petunjuk Cloudflare yang muncul.
-5. Deploy, lalu buka URL yang diberikan Cloudflare.
+## Catatan Cloudflare Pages
+- `_headers` meminta header cross-origin isolation yang dibutuhkan sebagian fitur WebAssembly/SharedArrayBuffer. Perubahan header mungkin memerlukan deployment baru dan cache refresh.
+- FFmpeg dan utilitasnya dimuat dari CDN jsDelivr. Saat pertama dibuka perlu internet dan dapat mengunduh file besar.
+- Jika browser melaporkan `SharedArrayBuffer` tidak tersedia atau mesin FFmpeg gagal dimuat, periksa `_headers`, deployment terbaru, koneksi, dan dukungan browser. Jangan menghapus pesan error; gunakan sebagai petunjuk.
+- Cloudflare Pages hanya meng-host situs statis. Paket ini tidak memakai backend, database, login, atau API AI.
 
-Alternatif unggah aset statis: gunakan opsi Direct Upload jika tersedia pada dashboard akunmu.
+## Batasan perangkat
+Pemrosesan berjalan di RAM/perangkat pengguna. File besar, video resolusi tinggi, durasi panjang, atau banyak tab dapat membuat proses lambat/gagal atau tab tertutup. Mulai dengan klip uji pendek (misalnya 10–30 detik). Tutup aplikasi lain jika memori rendah.
 
-## Catatan penting
-- Jangan menjanjikan FYP/viral; AI hanya memberi estimasi dan saran.
-- Jangan gunakan URL YouTube untuk mengunduh atau mengolah konten tanpa hak/izin yang sesuai. Periksa ketentuan YouTube dan hukum yang berlaku.
-- Paket gratis pihak ketiga dapat memiliki batas, perubahan ketentuan, dan biaya penggunaan. Verifikasi sebelum mengaktifkan backend.
-- Website demo ini tidak memiliki login, database, backend pemrosesan video, atau API AI generatif.
+## Keamanan rahasia
+Versi ini **tidak membutuhkan secret/API key**. Jangan menaruh token, password, atau API key di `app.js`, `index.html`, repositori publik, atau variabel frontend. Jika kelak menambah AI API, panggil API melalui backend/Worker dan simpan secret lewat Cloudflare Dashboard → Worker → Settings → Variables and Secrets. Jangan memasukkan secret di prompt atau mengirimkannya ke browser.
+
+## YouTube dan izin
+Tautan YouTube bukan file video yang bisa diproses langsung oleh paket ini. Untuk video milik Anda, gunakan cara ekspor/unduh resmi yang tersedia bagi akun Anda atau sumber file asli, lalu unggah file lokal. Untuk video orang lain, pastikan Anda punya izin dan patuhi ketentuan platform/hak cipta. Jangan gunakan alat ini untuk melewati pembatasan unduhan.
+
+## Troubleshooting
+- **Tombol ekspor tidak aktif:** pilih file video lokal yang valid.
+- **Gagal memuat FFmpeg:** reload halaman dengan internet stabil; pastikan deployment menggunakan file `_headers`.
+- **Proses gagal di HP:** coba video lebih pendek/kecil, tutup tab lain, atau gunakan komputer. Tidak semua perangkat mendukung pemrosesan ini.
+- **Video tanpa audio / format tidak terbaca:** coba MP4 H.264/AAC sebagai file sumber.

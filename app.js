@@ -1,26 +1,123 @@
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const titles={home:"Beranda",create:"Buat Klip AI",analysis:"Analisis Potensi FYP",captions:"Subtitle & Judul",history:"Riwayat Klip",support:"Tanya ClipCepat AI"};
-function go(view){$$(".view").forEach(x=>x.classList.add("hidden"));$("#view-"+view)?.classList.remove("hidden");$$(".nav-item").forEach(x=>x.classList.toggle("active",x.dataset.view===view));$("#pageTitle").textContent=titles[view]||"ClipCepat AI";$(".sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
-$$("[data-view]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));$$("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));$("#menuToggle").addEventListener("click",()=>$(".sidebar").classList.toggle("open"));
-let toastTimer;function toast(s){const t=$("#toast");t.textContent=s;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2600)}
-function validYoutube(s){try{const u=new URL(s);return ["youtube.com","www.youtube.com","m.youtube.com","youtu.be","www.youtube-nocookie.com"].includes(u.hostname)&&(/\/watch/.test(u.pathname)||/youtu\.be/.test(u.hostname)||/\/shorts\//.test(u.pathname)||/\/live\//.test(u.pathname))}catch{return false}}
-$("#pasteBtn").addEventListener("click",async()=>{try{const t=await navigator.clipboard.readText();$("#youtubeUrl").value=t;toast("Tautan ditempel")}catch{ $("#youtubeUrl").focus();toast("Tempel tautan menggunakan menu Tempel di keyboard") }});
-$("#createBtn").addEventListener("click",()=>{const url=$("#youtubeUrl").value.trim(),r=$("#createResult");r.classList.remove("hidden");if(!validYoutube(url)){r.innerHTML="<b>Tautan belum valid</b>Masukkan URL YouTube yang benar, misalnya https://www.youtube.com/watch?v=...";return}r.innerHTML="<b>Antarmuka siap — backend belum terhubung</b>URL berhasil dikenali. Agar klip asli dapat dibuat, website perlu backend untuk mengambil sumber video yang sah, memprosesnya dengan FFmpeg atau layanan setara, menjalankan analisis AI, dan menyimpan hasil unduhan. Tidak ada video yang diunduh pada demo ini.<p><b>Pengaturan pilihan:</b> "+esc($("#duration").value)+" · "+esc($("#format").value)+" · "+esc($("#quality").value)+" · "+esc($("#goal").value)+"</p>";});
-$("#analyzeBtn").addEventListener("click",()=>{const topic=$("#analysisTopic").value.trim(),r=$("#analysisResult");r.classList.remove("hidden");r.className="result-box";if(!topic){r.textContent="Masukkan ringkasan atau topik video terlebih dahulu.";return}r.innerHTML="<b>Contoh saran awal (bukan hasil analisis AI)</b><p>• Buka dengan pertanyaan, fakta mengejutkan, atau konflik yang relevan.</p><p>• Pastikan satu ide utama mudah dipahami.</p><p>• Gunakan subtitle kontras dan hindari teks terlalu rapat.</p><p>• Buat penutup yang memberi alasan untuk menonton sampai akhir.</p><small>Untuk analisis konten sesungguhnya, sambungkan transkripsi/analisis AI melalui backend.</small>";});
-$("#captionBtn").addEventListener("click",()=>{const topic=$("#captionTopic").value.trim(),r=$("#captionResult");r.classList.remove("hidden");r.className="result-box";if(!topic){r.textContent="Isi topik video dulu.";return}const p=$("#platform").value;r.innerHTML="<b>Draf teks contoh — "+esc(p)+"</b><p><strong>Judul:</strong> "+esc(topic)+" — hal yang perlu kamu tahu</p><p><strong>Caption:</strong> Simak sampai akhir untuk memahami "+esc(topic.toLowerCase())+". Apa pendapatmu? Tulis di komentar.</p><p><strong>Hashtag:</strong> #Shorts #VideoIndonesia #"+slug(topic)+"</p><small>Ini template sederhana. API AI diperlukan untuk menghasilkan rekomendasi dinamis yang lebih relevan.</small>";});
-function slug(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]/g,"").slice(0,24)||"Konten"}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-const faq=[
-{keys:["cara membuat","buat klip","membuat klip","cara menggunakan","mulai"],answer:"Untuk memulai, buka menu Buat Klip AI, masukkan tautan YouTube yang valid, lalu pilih durasi, format, kualitas, dan fokus klip. Pada versi awal ini tombol hanya memvalidasi tautan. Backend pemrosesan video harus dihubungkan sebelum klip asli dapat dibuat."},
-{keys:["2k","1080","resolusi","kualitas","hd"],answer:"Antarmuka menyediakan pilihan 720p, 1080p, dan 2K jika didukung. Resolusi hasil bergantung pada sumber video dan mesin pemrosesan. Pilihan resolusi di demo ini belum menjalankan ekspor video."},
-{keys:["unduh","download","belum bisa","video jadi","hasil klip"],answer:"Klip belum bisa diunduh karena versi awal belum terhubung ke backend video. Diperlukan layanan pemrosesan video, penyimpanan hasil, dan endpoint aman untuk membuat tautan unduhan."},
-{keys:["fyp","viral","analisis"],answer:"Analisis potensi FYP dapat menilai hook, alur cerita, tempo, subtitle, dan relevansi topik. AI tidak dapat menjamin FYP atau viral. Analisis otomatis membutuhkan transkrip atau konten yang bisa diakses secara sah dan API AI."},
-{keys:["subtitle","caption","hashtag","judul"],answer:"Menu Subtitle & Judul saat ini menghasilkan template sederhana. Untuk subtitle dari ucapan video dan rekomendasi teks yang dinamis, hubungkan layanan speech-to-text dan API AI melalui backend."},
-{keys:["gratis","biaya","bayar"],answer:"Antarmuka dan hosting statis dapat dimulai dengan paket gratis. Pemrosesan video berat, penyimpanan, transkripsi, dan API AI mungkin memiliki batas gratis atau biaya. Periksa batas layanan sebelum dipublikasikan."},
-{keys:["youtube","hak cipta","izin","copyright"],answer:"Gunakan video milikmu atau video yang izinnya kamu miliki. Tautan publik tidak otomatis memberi hak untuk mengunduh atau mengolah video. Integrasi harus mematuhi ketentuan YouTube dan hukum hak cipta."},
-{keys:["api","backend","aktif","berfungsi"],answer:"Website ini adalah frontend siap unggah ke Cloudflare Pages. Pemrosesan URL menjadi klip dan jawaban AI generatif belum aktif; keduanya memerlukan backend/API. Jangan menaruh API key rahasia di JavaScript frontend."}
-];
-function supportAnswer(q){const s=q.toLowerCase();for(const item of faq){if(item.keys.some(k=>s.includes(k)))return item.answer}return "Maaf, saya hanya dapat membantu pertanyaan seputar penggunaan dan fitur ClipCepat AI. Kamu bisa bertanya tentang cara membuat klip, resolusi, subtitle, analisis FYP, biaya, atau kendala website."}
-function addMessage(text,who){const d=document.createElement("div");d.className="message "+who;d.textContent=text;$("#chatMessages").appendChild(d);$("#chatMessages").scrollTop=$("#chatMessages").scrollHeight}
-$("#chatForm").addEventListener("submit",e=>{e.preventDefault();const input=$("#chatInput"),q=input.value.trim();if(!q)return;addMessage(q,"user");input.value="";setTimeout(()=>addMessage(supportAnswer(q),"bot"),180)});
-$$(".suggestion").forEach(b=>b.addEventListener("click",()=>{addMessage(b.textContent,"user");setTimeout(()=>addMessage(supportAnswer(b.textContent),"bot"),180)}));
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const fileInput = $("videoFile"), preview = $("preview"), exportBtn = $("exportBtn");
+  let selectedFile = null, ffmpeg = null, ffmpegLoading = null;
+
+  const showError = (message) => { $("errorMessage").textContent = message || ""; };
+  const formatBytes = (n) => n < 1024*1024 ? `${(n/1024).toFixed(0)} KB` : `${(n/1024/1024).toFixed(1)} MB`;
+
+  fileInput.addEventListener("change", () => {
+    showError("");
+    selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+    if (!selectedFile) { exportBtn.disabled = true; return; }
+    if (!selectedFile.type.startsWith("video/")) {
+      selectedFile = null; exportBtn.disabled = true;
+      showError("File ini tidak terdeteksi sebagai video. Pilih file video seperti MP4, MOV, atau WebM."); return;
+    }
+    preview.src = URL.createObjectURL(selectedFile);
+    preview.classList.remove("hidden");
+    $("fileInfo").textContent = `${selectedFile.name} · ${formatBytes(selectedFile.size)} · Durasi akan dibaca dari pemutar video`;
+    $("fileInfo").classList.remove("hidden");
+    preview.onloadedmetadata = () => {
+      $("startTime").max = preview.duration;
+      $("endTime").max = preview.duration;
+      $("endTime").value = Math.min(15, preview.duration).toFixed(1);
+    };
+    exportBtn.disabled = false;
+  });
+
+  $("checkUrl").addEventListener("click", () => {
+    const raw = $("youtubeUrl").value.trim();
+    const msg = $("urlMessage");
+    try {
+      const url = new URL(raw);
+      const host = url.hostname.toLowerCase().replace(/^www\./, "");
+      if (!["youtube.com","m.youtube.com","youtu.be","youtube-nocookie.com"].includes(host)) {
+        msg.textContent = "Ini bukan domain YouTube yang dikenali. Untuk keselamatan, jangan masukkan pautan mencurigakan.";
+        return;
+      }
+      msg.textContent = "Tautan YouTube dikenali sebagai referensi, tetapi aplikasi ini tidak mengunduh atau memprosesnya langsung. Jika Anda pemilik/punya izin, gunakan opsi unduhan resmi yang tersedia bagi akun/konten Anda, lalu unggah file videonya di kotak kiri.";
+    } catch {
+      msg.textContent = "Masukkan URL lengkap, misalnya https://www.youtube.com/watch?v=... . Tautan hanya diperiksa, bukan diunduh.";
+    }
+  });
+
+  async function loadFFmpeg() {
+    if (ffmpeg && ffmpeg.loaded) return ffmpeg;
+    if (ffmpegLoading) return ffmpegLoading;
+    ffmpegLoading = (async () => {
+      if (!window.FFmpegWASM || !window.FFmpegUtil) {
+        throw new Error("Mesin video belum termuat. Periksa koneksi internet, lalu muat ulang halaman.");
+      }
+      const { FFmpeg } = window.FFmpegWASM;
+      const { toBlobURL } = window.FFmpegUtil;
+      ffmpeg = new FFmpeg();
+      ffmpeg.on("progress", ({ progress }) => {
+        const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
+        $("progressBar").style.width = pct + "%";
+        $("progressText").textContent = `Sedang memproses video… ${pct}%`;
+      });
+      const coreBase = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd";
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${coreBase}/ffmpeg-core.js`, "text/javascript"),
+        wasmURL: await toBlobURL(`${coreBase}/ffmpeg-core.wasm`, "application/wasm")
+      });
+      return ffmpeg;
+    })();
+    try { return await ffmpegLoading; } finally { ffmpegLoading = null; }
+  }
+
+  function makeSrt(text, duration, title) {
+    const clean = text.trim();
+    if (!clean) return "";
+    const esc = (s) => s.replace(/-->/g, "→").replace(/\r/g, "").trim();
+    const stamp = (s) => {
+      const ms = Math.max(0, Math.round(s * 1000));
+      const h = String(Math.floor(ms / 3600000)).padStart(2,"0");
+      const m = String(Math.floor(ms % 3600000 / 60000)).padStart(2,"0");
+      const sec = String(Math.floor(ms % 60000 / 1000)).padStart(2,"0");
+      const milli = String(ms % 1000).padStart(3,"0");
+      return `${h}:${m}:${sec},${milli}`;
+    };
+    return `1\n${stamp(0)} --> ${stamp(Math.max(1,duration))}\n${esc(title ? title + "\\n" + clean : clean)}\n`;
+  }
+  function downloadBlob(blob, name) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  }
+
+  exportBtn.addEventListener("click", async () => {
+    showError("");
+    if (!selectedFile) { showError("Pilih file video terlebih dahulu."); return; }
+    const start = Number($("startTime").value), end = Number($("endTime").value);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start) {
+      showError("Waktu akhir harus lebih besar dari waktu mulai, dan keduanya tidak boleh negatif."); return;
+    }
+    if (Number.isFinite(preview.duration) && end > preview.duration + 0.1) {
+      showError(`Waktu akhir melewati durasi video (${preview.duration.toFixed(1)} detik).`); return;
+    }
+    const safeName = (selectedFile.name.replace(/\.[^.]+$/, "").replace(/[^a-z0-9_-]+/gi,"-").slice(0,45) || "clip");
+    exportBtn.disabled = true; $("progressArea").classList.remove("hidden");
+    $("progressBar").style.width = "2%"; $("progressText").textContent = "Memuat mesin video (pertama kali bisa lama)…";
+    try {
+      const engine = await loadFFmpeg();
+      const inputName = "input-video";
+      const outputName = "clipcepat-output.mp4";
+      await engine.writeFile(inputName, new Uint8Array(await selectedFile.arrayBuffer()));
+      $("progressText").textContent = "Memotong video…";
+      const result = await engine.exec(["-ss", String(start), "-i", inputName, "-t", String(end-start), "-c:v", "libx264", "-preset", "ultrafast", "-crf", "27", "-c:a", "aac", "-movflags", "+faststart", outputName]);
+      if (result !== 0) throw new Error("FFmpeg tidak dapat menyelesaikan pemotongan video.");
+      const data = await engine.readFile(outputName);
+      downloadBlob(new Blob([data.buffer], {type:"video/mp4"}), `${safeName}-clip.mp4`);
+      const subtitle = makeSrt($("subtitleText").value, end-start, $("clipTitle").value.trim());
+      if (subtitle) downloadBlob(new Blob([subtitle], {type:"text/plain;charset=utf-8"}), `${safeName}-subtitle.srt`);
+      $("progressBar").style.width = "100%";
+      $("progressText").textContent = subtitle ? "Selesai. File MP4 dan subtitle SRT diunduh terpisah." : "Selesai. File MP4 berhasil diunduh.";
+    } catch (err) {
+      showError(`Ekspor gagal: ${err && err.message ? err.message : err}\nCoba video lebih pendek/kecil, pastikan internet stabil, atau gunakan browser/perangkat lain.`);
+      $("progressText").textContent = "Proses belum berhasil.";
+    } finally { exportBtn.disabled = !selectedFile; }
+  });
+})();
